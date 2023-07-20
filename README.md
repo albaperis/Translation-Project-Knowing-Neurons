@@ -25,7 +25,9 @@ This work is licensed under a
 
 # The Translation Project
 
-All data was acquired from January 1st - June 30th 2023.
+Data extracted from Google Analytics and used to create the manuscript figures can be found in the /data folder and the code used to create all plots from the data can be found in /code. 
+
+All data was acquired from January 1st - June 30th 2023. 
 
 # General data
 
@@ -56,25 +58,6 @@ looks like
 
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-    ## 142 codes from your data successfully matched countries in the map
-    ## 15 codes from your data failed to match with a country code in the map
-    ##       failedCodes failedCountries        
-    ##  [1,] NA          "Total"                
-    ##  [2,] NA          "Türkiye"              
-    ##  [3,] NA          "(not set)"            
-    ##  [4,] NA          "Czechia"              
-    ##  [5,] NA          "North Macedonia"      
-    ##  [6,] NA          "Bosnia & Herzegovina" 
-    ##  [7,] NA          "Myanmar (Burma)"      
-    ##  [8,] NA          "U.S. Virgin Islands"  
-    ##  [9,] NA          "Curaçao"              
-    ## [10,] NA          "Réunion"              
-    ## [11,] NA          "Trinidad & Tobago"    
-    ## [12,] NA          "Antigua & Barbuda"    
-    ## [13,] NA          "Caribbean Netherlands"
-    ## [14,] NA          "Côte d’Ivoire"        
-    ## [15,] "MTQ"       "Martinique"           
-    ## 101 codes from the map weren't represented in your data
 
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
@@ -93,26 +76,6 @@ profiles looks like
     ## 6          India Jan 1, 2023 - Jun 30, 2023 With /es/     6
 
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
-    ## 142 codes from your data successfully matched countries in the map
-    ## 15 codes from your data failed to match with a country code in the map
-    ##       failedCodes failedCountries        
-    ##  [1,] NA          "Total"                
-    ##  [2,] NA          "Türkiye"              
-    ##  [3,] NA          "North Macedonia"      
-    ##  [4,] NA          "U.S. Virgin Islands"  
-    ##  [5,] NA          "(not set)"            
-    ##  [6,] NA          "Czechia"              
-    ##  [7,] NA          "Bosnia & Herzegovina" 
-    ##  [8,] NA          "Myanmar (Burma)"      
-    ##  [9,] NA          "Curaçao"              
-    ## [10,] NA          "Réunion"              
-    ## [11,] NA          "Trinidad & Tobago"    
-    ## [12,] NA          "Antigua & Barbuda"    
-    ## [13,] NA          "Caribbean Netherlands"
-    ## [14,] NA          "Côte d’Ivoire"        
-    ## [15,] "MTQ"       "Martinique"           
-    ## 101 codes from the map weren't represented in your data
 
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
