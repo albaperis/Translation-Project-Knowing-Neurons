@@ -3,10 +3,10 @@ title: "Knowing Neurons Users"
 author: "Peris-Yague et al. 2023"
 date: "17/6/2023"
 output: 
-  html_document:
-    df_print: paged
   github_document:
     toc: true
+  html_document:
+    df_print: paged
   pdf_document: default
   word_document: default
 ---
@@ -45,7 +45,7 @@ If you'd like to take a look at the general data you can find it in the file: da
 
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/data_manuscript")
+setwd("/data/")
 
 data <- read.csv('data_20230101-20230630.csv', header = TRUE)
 data$Country <- as.factor(data$Country)
@@ -53,7 +53,7 @@ data$Date.Range <- as.factor(data$Date.Range)
 data$Segment <- as.factor(data$Segment)
 data$Users <- as.numeric(data$Users)
 
-data # view the data for the whole site 
+head(data) # view the data for the whole site 
 ```
 
 
@@ -64,7 +64,7 @@ We can now filter the data to only the English site i.e. without the tag '/es/'.
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 gen.site<- data %>% filter(Segment == "Without /es/") %>% droplevels()
 
-gen.site #view the english site data 
+head(gen.site) #view the english site data 
 
 gen.site <- gen.site[order (gen.site$Users, decreasing=TRUE), ]                           
 gen.site.top10 <- gen.site[1:11,]
@@ -119,7 +119,7 @@ We can now filter the data to only the Spanish site i.e. with the tag '/es/'. An
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 spanish.site<- data %>% filter(Segment == "With /es/") %>% droplevels()
-spanish.site # view spanish site data
+head(spanish.site) # view spanish site data
 
 spanish.site <- spanish.site[order (spanish.site$Users, decreasing=TRUE), ]                           
 spanish.site.top10 <- spanish.site[1:11,]
@@ -203,7 +203,7 @@ Now we can look at the users profile across different states in the United State
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 rm(list = ls())
-setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/data_manuscript/")
+setwd("/data/")
 #Load all the data 
 statedata<-read.csv('data_USA_20230101-20230630.csv', header=TRUE)
 colnames(statedata) <- c('state','when','segment','users')
@@ -211,6 +211,8 @@ colnames(statedata) <- c('state','when','segment','users')
 statedata$state <- as.factor(statedata$state)
 statedata$when <- as.factor(statedata$when)
 statedata$users <- as.numeric(statedata$users)
+
+head(statedata)
 
 data4map <- left_join(statepop, statedata, by = c("full" = "state"))
 
