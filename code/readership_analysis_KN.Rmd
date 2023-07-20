@@ -1,0 +1,289 @@
+---
+title: "Knowing Neurons Users"
+author: "Peris-Yague et al. 2023"
+date: "17/6/2023"
+output: 
+  html_document:
+    df_print: paged
+  github_document:
+    toc: true
+  pdf_document: default
+  word_document: default
+---
+
+```{r  echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+
+#Install all libraries 
+
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(rsample)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(effects)
+library(lme4)
+library(plyr)
+library(emmeans)
+library(reshape2)
+library(rworldmap)
+library(classInt)
+library(usmap)
+
+```
+
+# The Translation Project 
+
+All data was acquired from January 1st - June 30th 2023. 
+
+# General data 
+
+If you'd like to take a look at the general data you can find it in the file: data_20230101-20230630.csv
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/data_manuscript")
+
+data <- read.csv('data_20230101-20230630.csv', header = TRUE)
+data$Country <- as.factor(data$Country)
+data$Date.Range <- as.factor(data$Date.Range)
+data$Segment <- as.factor(data$Segment)
+data$Users <- as.numeric(data$Users)
+
+data # view the data for the whole site 
+```
+
+
+# English Site
+
+We can now filter the data to only the English site i.e. without the tag '/es/'. And do a barplot and a world map plot of what the user profiles looks like 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+gen.site<- data %>% filter(Segment == "Without /es/") %>% droplevels()
+
+gen.site #view the english site data 
+
+gen.site <- gen.site[order (gen.site$Users, decreasing=TRUE), ]                           
+gen.site.top10 <- gen.site[1:11,]
+
+gen.site.top10<- droplevels(gen.site.top10)
+gen.site.top10$percent <- gen.site.top10$Users / gen.site[1,4] * 100
+gen.site.top10$percent <- format(round(gen.site.top10$percent, 2), nsmall = 2) 
+gen.site.top10$percent <- sprintf("%s %%", gen.site.top10$percent)
+
+gen.site.top10 <- gen.site.top10 %>% filter(Country != "Total") %>% droplevels()
+
+plt.gen.site<- ggplot(gen.site.top10, aes(x=reorder(Country, -Users), y=Users, fill = Country)) +
+  geom_bar(stat='identity')+
+  geom_text(aes(label=percent), vjust=-0.5) +
+  ylab('Number of Users')+
+  xlab('Top 10 countries')+
+  ggtitle('Knowing Neurons Website January 1 2023 - June 30 2023')+
+  theme_classic()+
+  theme(strip.background=element_blank(), text=element_text(size=8))
+
+plt.gen.site
+
+plt <- joinCountryData2Map(gen.site, nameJoinColumn='Country',joinCode = "NAME", verbose=TRUE)
+
+palette <- RColorBrewer::brewer.pal(9,'PuBu') #Get a color palette from R color Brewer 
+classInt <- classInt::classIntervals( plt[["Users"]], n=7, style="jenks")
+catMethod = c(0, 100,200, 500, 1000, 5000, 7000, 12000)#classInt[["brks"]]
+
+
+par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
+
+worldplt<-mapCountryData(plt, 
+               nameColumnToPlot="Users", 
+               mapTitle= 'Number of Users Without /es/',
+               colourPalette=palette, 
+               catMethod = catMethod,
+               #oceanCol='lightblue1', 
+               missingCountryCol='white',
+               addLegend= FALSE,
+               borderCol= 'gray') 
+
+do.call(addMapLegend, c(worldplt, horizontal = TRUE,
+                        legendWidth = 0.5,
+                        legendLabels = "limits"))
+
+```
+
+# Spanish Site
+
+We can now filter the data to only the Spanish site i.e. with the tag '/es/'. And do a barplot and a world map plot of what the user profiles looks like 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+spanish.site<- data %>% filter(Segment == "With /es/") %>% droplevels()
+spanish.site # view spanish site data
+
+spanish.site <- spanish.site[order (spanish.site$Users, decreasing=TRUE), ]                           
+spanish.site.top10 <- spanish.site[1:11,]
+spanish.site.top10<- droplevels(spanish.site.top10)
+spanish.site.top10$percent <- spanish.site.top10$Users / spanish.site[1,4] * 100
+spanish.site.top10$percent <- format(round(spanish.site.top10$percent, 2), nsmall = 2) 
+spanish.site.top10$percent <- sprintf("%s %%", spanish.site.top10$percent)
+
+spanish.site.top10 <- spanish.site.top10 %>% filter(Country != "Total") %>% droplevels()
+
+plt.gen.site.spanish <- ggplot(spanish.site.top10, aes(x=reorder(Country, -Users), y=Users, fill = Country)) +
+  geom_bar(stat='identity')+
+  geom_text(aes(label=percent), vjust=-0.5) +
+  ylab('Number of Users')+
+  xlab('Top 10 countries')+
+  ggtitle('Knowing Neurons Spanish Website January 1 2023 - June 30 2023')+
+  theme_classic()+
+  theme(strip.background=element_blank(), text=element_text(size=8))
+
+plt.gen.site.spanish
+
+plt <- joinCountryData2Map(spanish.site, nameJoinColumn='Country',joinCode = "NAME", verbose=TRUE)
+
+palette <- RColorBrewer::brewer.pal(9,'PuBu') #Get a color palette from R color Brewer 
+classInt <- classInt::classIntervals( plt[["Users"]], n=7, style="jenks")
+catMethod = c(0, 20, 50, 100, 250)#classInt[["brks"]]
+
+
+par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
+
+worldplt<-mapCountryData(plt, 
+               nameColumnToPlot="Users", 
+               mapTitle= 'Number of Users With /es/',
+               colourPalette=palette, 
+               catMethod = catMethod,
+               #oceanCol='lightblue1', 
+               missingCountryCol='white',
+               addLegend= FALSE,
+               borderCol= 'gray') 
+
+do.call(addMapLegend, c(worldplt, horizontal = TRUE,
+                        legendWidth = 0.5,
+                        legendLabels = "all"))
+````
+
+# Comparison of the Spanish-speaking top 10 countries 
+
+Now we can compare from the Spanish top 10 readership countries, those that are Spanish speaking, with their amount of users in the US site. 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+# Select the /es/ website's top 10 countries and compare them to the without es and all users 
+#United States, Guatemala, Spain, Mexico, Colombia, Germany, Argentina, Equador, United Kingdom, India
+
+spanish.top.10.compareall <- data %>% filter(
+                                               Country == "Guatemala" |
+                                               Country == 'Spain'| 
+                                               Country == 'Mexico' |
+                                               Country == 'Colombia' |
+                                               Country == 'Argentina' |
+                                               Country == 'Equador') %>% droplevels() #|
+                        
+spanish.top.10.compareall<- spanish.top.10.compareall %>% filter(Segment != "All Users") %>% droplevels()
+
+plt.spanishtop10.compareall <- ggplot(spanish.top.10.compareall, aes(x=Segment, y=Users, fill = Country, group = Segment)) +
+  facet_grid(~ Country) +
+  geom_bar(stat='identity')+
+  ylab('Number of Users')+
+  xlab('Top 10 countries')+
+  ggtitle('January 2023 - June 2023')+ # April 1 2021 - June 17 2023
+  theme_classic()+
+  theme(strip.background=element_blank(), text=element_text(size=8))
+
+plt.spanishtop10.compareall
+
+```
+
+# USA users January 1 2023 - June 30 2023 (since /es/ launch readership)
+
+Now we can look at the users profile across different states in the United States separating the Spanish and English domains as well as plot the top 10 states that show the majority of users. 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+rm(list = ls())
+setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/data_manuscript/")
+#Load all the data 
+statedata<-read.csv('data_USA_20230101-20230630.csv', header=TRUE)
+colnames(statedata) <- c('state','when','segment','users')
+
+statedata$state <- as.factor(statedata$state)
+statedata$when <- as.factor(statedata$when)
+statedata$users <- as.numeric(statedata$users)
+
+data4map <- left_join(statepop, statedata, by = c("full" = "state"))
+
+data4map_English <- data4map %>% filter(segment == "Without /es/") %>% droplevels()
+data4map_English <- data4map_English[ which(data4map_English$users > 0), ]
+
+data4map_Spanish <- data4map %>% filter(segment == "Spanish Website") %>% droplevels()
+data4map_Spanish <- data4map_Spanish[ which(data4map_Spanish$users > 0), ]
+
+us_English<- plot_usmap(data = data4map_English, values = "users", labels=TRUE) + 
+  scale_fill_continuous(
+    low = "lightblue1", high = "dodgerblue4", na.value = "white", name = "Number of Users",
+  ) + 
+  theme(legend.position = "right") + labs(title = "Without /es/") 
+
+us_English
+
+us_Spanish<- plot_usmap(data = data4map_Spanish, values = "users", labels=TRUE) + 
+  scale_fill_continuous(
+    low = "lightblue1", high = "dodgerblue4", na.value = "white", name = "Number of Users",
+  ) + 
+  theme(legend.position = "right")+ labs(title = "With /es/")
+
+us_Spanish
+
+
+#### Plot top 10 states 
+English <- statedata %>% filter(segment == "Without /es/") %>% droplevels()
+
+top10_USA_English <- English[order (English$users, decreasing=TRUE), ]                           
+top10_USA_English <- top10_USA_English[1:11,]
+
+top10_USA_English<- droplevels(top10_USA_English)
+top10_USA_English$percent <- top10_USA_English$users / top10_USA_English[1,4] * 100
+top10_USA_English$percent <- format(round(top10_USA_English$percent, 2), nsmall = 2) 
+top10_USA_English$percent <- sprintf("%s %%", top10_USA_English$percent)
+
+top10_USA_English <- top10_USA_English %>% filter(state != "Total") %>% droplevels()
+
+plt.USA.English<- ggplot(top10_USA_English, aes(x=reorder(state, -users), y=users, fill = state)) +
+  geom_bar(stat='identity')+
+  geom_text(aes(label=percent), vjust=-0.5) +
+  ylab('Number of Users')+
+  xlab('Top 10 states')+
+  ggtitle('Without /es/ January 1 2023 - June 30 2023')+
+  theme_classic()+
+  theme(strip.background=element_blank(), text=element_text(size=8))
+
+plt.USA.English
+
+### Now plot in Spanish 
+Spanish <- statedata %>% filter(segment == "Spanish Website") %>% droplevels()
+
+top10_USA_Spanish <- Spanish[order (Spanish$users, decreasing=TRUE), ]                           
+top10_USA_Spanish <- top10_USA_Spanish[1:11,]
+
+top10_USA_Spanish<- droplevels(top10_USA_Spanish)
+top10_USA_Spanish$percent <- top10_USA_Spanish$users / top10_USA_Spanish[1,4] * 100
+top10_USA_Spanish$percent <- format(round(top10_USA_Spanish$percent, 2), nsmall = 2) 
+top10_USA_Spanish$percent <- sprintf("%s %%", top10_USA_Spanish$percent)
+
+top10_USA_Spanish <- top10_USA_Spanish %>% filter(state != "Total") %>% droplevels()
+
+plt.USA.Spanish<- ggplot(top10_USA_Spanish, aes(x=reorder(state, -users), y=users, fill = state)) +
+  geom_bar(stat='identity')+
+  geom_text(aes(label=percent), vjust=-0.5) +
+  ylab('Number of Users')+
+  xlab('Top 10 states')+
+  ggtitle('With /es/ January 1 2023 - June 30 2023')+
+  theme_classic()+
+  theme(strip.background=element_blank(), text=element_text(size=8))
+
+plt.USA.Spanish
+ 
+
+```
