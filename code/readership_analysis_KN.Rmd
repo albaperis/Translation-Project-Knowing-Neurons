@@ -45,9 +45,9 @@ If you'd like to take a look at the general data you can find it in the file: da
 
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-setwd("/data/")
+setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/github_repo/Translation-Project-Knowing-Neurons/data")
 
-data <- read.csv('data_20230101-20230630.csv', header = TRUE)
+data <- read.csv('data_time_20230101-20230630.csv', header = TRUE)
 data$Country <- as.factor(data$Country)
 data$Date.Range <- as.factor(data$Date.Range)
 data$Segment <- as.factor(data$Segment)
@@ -110,6 +110,13 @@ do.call(addMapLegend, c(worldplt, horizontal = TRUE,
                         legendWidth = 0.5,
                         legendLabels = "limits"))
 
+
+# Calculate mean time spent in English website: 
+total_time <- gen.site %>% filter(Country == "Total")
+
+cat("Average Session Duration in Total in the English Website: ", total_time$Avg..Session.Duration, 'hour:min:sec')
+
+
 ```
 
 # Spanish Site
@@ -118,7 +125,7 @@ We can now filter the data to only the Spanish site i.e. with the tag '/es/'. An
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
-spanish.site<- data %>% filter(Segment == "With /es/") %>% droplevels()
+spanish.site<- data %>% filter(Segment == "Spanish Website") %>% droplevels()
 head(spanish.site) # view spanish site data
 
 spanish.site <- spanish.site[order (spanish.site$Users, decreasing=TRUE), ]                           
@@ -145,7 +152,7 @@ plt <- joinCountryData2Map(spanish.site, nameJoinColumn='Country',joinCode = "NA
 
 palette <- RColorBrewer::brewer.pal(9,'PuBu') #Get a color palette from R color Brewer 
 classInt <- classInt::classIntervals( plt[["Users"]], n=7, style="jenks")
-catMethod = c(0, 20, 50, 100, 250)#classInt[["brks"]]
+catMethod = c(0, 10, 20, 30, 40, 50, 80, 250)#c(0, 20, 50, 100, 250)#classInt[["brks"]]
 
 
 par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
@@ -163,6 +170,14 @@ worldplt<-mapCountryData(plt,
 do.call(addMapLegend, c(worldplt, horizontal = TRUE,
                         legendWidth = 0.5,
                         legendLabels = "all"))
+
+mean(spanish.site$time[1:156], na.rm = TRUE)
+
+
+total_time <- spanish.site %>% filter(Country == "Total")
+
+cat("Average Session Duration in Total in the Spanish Website: ", total_time$Avg..Session.Duration, 'hour:min:sec')
+
 ````
 
 # Comparison of the Spanish-speaking top 10 countries 
@@ -203,14 +218,18 @@ Now we can look at the users profile across different states in the United State
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 rm(list = ls())
-setwd("/data/")
+setwd("/Users/albaperis/Desktop/Alba/KnowingNeurons/article/github_repo/Translation-Project-Knowing-Neurons/data")
 #Load all the data 
-statedata<-read.csv('data_USA_20230101-20230630.csv', header=TRUE)
-colnames(statedata) <- c('state','when','segment','users')
+statedata<-read.csv('data_USA_time_20230101-20230630.csv', header=TRUE)
+#colnames(statedata) <- c('state','when','segment','users') 
 
-statedata$state <- as.factor(statedata$state)
-statedata$when <- as.factor(statedata$when)
-statedata$users <- as.numeric(statedata$users)
+
+statedata$state <- as.factor(statedata$Region)
+statedata$when <- as.factor(statedata$Date.Range)
+statedata$users <- as.numeric(statedata$Users)
+statedata$segment <- as.factor(statedata$Segment)
+
+statedata<- statedata %>% filter(state != "(not set)") %>% droplevels() #not set all users = 428, english = 417, spanish = 11
 
 head(statedata)
 
@@ -286,6 +305,15 @@ plt.USA.Spanish<- ggplot(top10_USA_Spanish, aes(x=reorder(state, -users), y=user
   theme(strip.background=element_blank(), text=element_text(size=8))
 
 plt.USA.Spanish
- 
+
+
+total_time <- English %>% filter(Region == "Total")
+
+cat("Average Session Duration in Total in the English Website in the USA: ", total_time$Avg..Session.Duration, 'hour:min:sec')
+
+total_time <- Spanish %>% filter(Region == "Total")
+
+cat("Average Session Duration in Total in the English Website in the USA: ", total_time$Avg..Session.Duration, 'hour:min:sec')
+
 
 ```
