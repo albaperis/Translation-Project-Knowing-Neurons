@@ -77,8 +77,8 @@ the top 10 states that show the majority of users.
 
   
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-6-1.png)<!---->
-![](README_files/readership_analysis_KN_files/figure-gfmunnamed-chunk-6-2.png)<!---->
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-6-3.png)<!---->
+![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-6-2.png)<!---->
 ![](README_files/readership_analysis_KN_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->
 
     ## Average Session Duration in Total in the English Website in the USA:  00:01:19 hour:min:sec
